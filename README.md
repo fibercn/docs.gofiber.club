@@ -1,2 +1,3 @@
-# docs.gofiber.cn
-fiber 中文文档
+# Headline
+
+> An awesome project.
