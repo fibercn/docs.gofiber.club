@@ -27,4 +27,152 @@ func handler(c *fiber.Ctx) error {
 }
 ```
 
-如果需要在处理程序外部持久化这样的值，请使用复制内置来复制它们的底层缓冲区。以下是持久化字符串的示例：
+如果需要在处理程序外部持久化这样的值，请使用内置`copy()`。以下是持久化字符串的示例：
+
+```go
+func handler(c *fiber.Ctx) error {
+    // result 变量只在当前 handler 方法中有效
+    result := c.Params("foo")
+
+  // 使用 copy() 复制缓冲区
+    buffer := make([]byte, len(result))
+    copy(buffer, result)
+    resultCopy := string(buffer) 
+    // resultCopy 现在永久有效
+
+    // ...
+}
+```
+
+可以使用我们提供的`ImmutableString()`方法来简化上述操作，可以在`gofiber/utils`中找到
+
+```go
+app.Get("/:foo", func(c *fiber.Ctx) error {
+    // result 现在永久有效
+    result := utils.ImmutableString(c.Params("foo")) 
+
+    // ...
+})
+```
+
+或者，您也可以使用**Immutable**设置。它将使从上下文返回的所有值都不可修改，允许您在任何地方持久化它们。当然，这是以性能为代价的。
+
+了解更多，[#426](https://github.com/gofiber/fiber/issues/426)和[#185](https://github.com/gofiber/fiber/issues/185)
+
+## Hello, World
+
+下面是使用 Fiber 创建一个 http 服务
+
+```go
+// server.go
+package main
+
+import "github.com/gofiber/fiber/v2"
+
+func main() {
+  app := fiber.New()
+
+  app.Get("/", func(c *fiber.Ctx) error {
+    return c.SendString("Hello, World!")
+  })
+
+  app.Listen(":3000")
+}
+```
+
+```shell
+go run server.go
+```
+
+打开浏览器访问`http://localhost:3000`
+
+## 基本路由
+
+*路由*用于确定应用程序如何响应对特定端点的客户机请求，包含一个 URI（或路径）和一个特定的 HTTP 请求方法（GET、POST 等）。
+
+!> 每个路由可以具有一个或多个处理程序函数，这些函数在路由匹配时执行
+
+路由定义采用以下结构：
+
+```go
+app.Method(path string, ...func(*fiber.Ctx) error)
+```
+
+其中：
+
+- `app` 是 `Fiber` 的实例。
+- `Method` 是 [HTTP 请求方法](https://zh.wikipedia.org/wiki/%E8%B6%85%E6%96%87%E6%9C%AC%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE)。
+- `path` 是服务器上的路径。
+- `func(*fiber.Ctx) error` 是在路由匹配时执行的函数。
+
+**简单路由**
+
+```go
+// 以主页上的 Hello World! 进行响应
+app.Get("/", func(c *fiber.Ctx) error {
+  return c.SendString("Hello, World!")
+})
+```
+
+**参数**
+
+```go
+// GET http://localhost:8080/hello%20world
+
+app.Get("/:value", func(c *fiber.Ctx) error {
+  return c.SendString("value: " + c.Params("value"))
+  // => 获取参数值: hello world
+})
+```
+
+**可选参数**
+
+```go
+// GET http://localhost:3000/john
+
+app.Get("/:name?", func(c *fiber.Ctx) error {
+  if c.Params("name") != "" {
+    return c.SendString("Hello " + c.Params("name"))
+    // => Hello john
+  }
+  return c.SendString("Where is john?")
+})
+```
+
+**通配符**
+
+```go
+// GET http://localhost:3000/api/user/john
+
+app.Get("/api/*", func(c *fiber.Ctx) error {
+  return c.SendString("API path: " + c.Params("*"))
+  // => API path: user/john
+})
+```
+
+## 静态文件
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
