@@ -152,27 +152,32 @@ app.Get("/api/*", func(c *fiber.Ctx) error {
 
 ## 静态文件
 
+为了提供诸如图像、CSS 文件和 JavaScript 文件之类的静态文件，请使用`app.Static()`方法
 
+函数签名
 
+```go
+app.Static(prefix, root string)
+```
 
+使用下面的代码在`./public`的目录中提供文件
 
+```go
+app := fiber.New()
 
+app.Static("/", "./public") 
 
+app.Listen(":3000")
+```
 
+现在就可以加载`./public`下的文件了
 
+```go
+http://localhost:8080/hello.html
+http://localhost:8080/js/jquery.js
+http://localhost:8080/css/style.css
+```
 
+## 最后
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+更多关于如何创建`API`的信息可以阅读这篇文章：[Go Fiber 框架系列教程 02：详解相关 API 的使用](https://polarisxu.studygolang.com/posts/go/fiber/go-fiber-basic-tutorial02/)

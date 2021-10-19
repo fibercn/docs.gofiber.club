@@ -19,10 +19,12 @@
       repo: 'https://github.com/gofiber/fiber',
       coverpage: true,
       onlyCover: true,
-      routerMode: 'history',
+      // routerMode: 'history',
+      loadSidebar: true,
+      subMaxLevel: 2,
       plugins: [
         EditOnGithubPlugin.create(
-          'https://github.com/fibercn/docs.gofiber.cn',
+          'https://github.com/fibercn/docs.gofiber.cn/tree/main/',
           null,
           (file)=>{
             if (file.indexOf('en') === -1) {
